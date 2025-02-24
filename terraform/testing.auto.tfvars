@@ -61,67 +61,11 @@ openshift_update_all_workers = true
 ##############################################################################
 existing_secrets_manager_name = "secrets-manager"
 
-##############################################################################
-## COS
-##############################################################################
-cos_plan   = "standard"
-cos_region = "global"
-
 
 ##############################################################################
-## Observability: Log Analysis (Mezmo) & Monitoring (Sysdig)
+## Observability: Monitoring (Sysdig)
 ##############################################################################
-# DEPRECATED (LMA)
-# Available Plans: lite, 7-day, 14-day, 30-day
-# log_plan                 = "7-day"
-# log_enable_platform_logs = false
 
 sysdig_plan                    = "graduated-tier"
 sysdig_enable_platform_metrics = true
 
-
-##############################################################################
-## ICD Mongo
-##############################################################################
-# Available Plans: standard, enterprise
-icd_mongo_plan = "standard"
-# expected length in the range (10 - 32) - must not contain special characters
-icd_mongo_adminpassword     = "AdministratorPassw0rd01"
-icd_mongo_db_version        = "6.0"
-icd_mongo_service_endpoints = "private"
-icd_mongo_use_vpe           = true
-
-# Minimum parameter for Enterprise Edition
-# icd_mongo_ram_allocation = 14336
-# icd_mongo_disk_allocation = 20480
-# icd_mongo_core_allocation = 6
-
-# Minimum parameter for Standard Edition
-icd_mongo_ram_allocation  = 4096 # old value: 1024
-icd_mongo_disk_allocation = 20480
-icd_mongo_core_allocation = 0
-
-icd_mongo_users = [{
-  name     = "user123"
-  password = "Password12"
-}]
-
-##############################################################################
-## ICD Postgres
-##############################################################################
-# # Available Plans: standard, enterprise
-# icd_postgres_plan = "standard"
-# # expected length in the range (10 - 32) - must not contain special characters
-# icd_postgres_adminpassword     = "Passw0rd01"
-# icd_postgres_db_version        = "12"
-# icd_postgres_service_endpoints = "public"
-
-# # Minimum parameter for Standard Edition
-# icd_postgres_ram_allocation  = 1024
-# icd_postgres_disk_allocation = 20480
-# icd_postgres_core_allocation = 0
-
-# icd_postgres_users = [{
-#   name     = "user123"
-#   password = "password12"
-# }]
