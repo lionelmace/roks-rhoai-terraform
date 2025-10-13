@@ -16,21 +16,21 @@ vpc_enable_public_gateway     = true
 ## Cluster ROKS
 ##############################################################################
 # Optional: Specify OpenShift version. If not included, 4.17 is used
-openshift_version = ""
+openshift_version = "4.19_openshift"
 # openshift_os             = "REDHAT_8_64"
 openshift_os             = "RHCOS"
-openshift_machine_flavor = "bx2.16x64"
+openshift_machine_flavor = "bx2.8x32"
 # openshift_machine_flavor = "bx2.16x64" # ODF Flavors
 install_addons = true
 
 # Scale up   by adding a worker pool
 # Scale down by setting the number of worker to Zero
 # Uncomment to create worker pool
-create_secondary_roks_pool = false
+create_secondary_roks_pool = true
 roks_worker_pools = [
   {
-    pool_name        = "wpool-rhoai"
-    machine_type     = "bx2.8x32"
+    pool_name        = "gpu"
+    machine_type     = "gx3.24x120.l40s"
     workers_per_zone = 1
   },
   # {
