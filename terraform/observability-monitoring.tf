@@ -31,6 +31,11 @@ variable "sysdig_enable_platform_metrics" {
   default     = false
 }
 
+variable "sysdig_use_vpe" {
+  default = true
+}
+
+
 # Monitoring Resource
 ##############################################################################
 
@@ -53,6 +58,118 @@ output "cloud_monitoring_crn" {
   value       = module.cloud_monitoring.crn
 }
 
+########################################################################################################################
+# SCC WP (Workload Protection)
+########################################################################################################################
+
+# Create SCC Workload Protection instance
+module "scc_wp" {
+  source = "terraform-ibm-modules/scc-workload-protection/ibm"
+  # version = "latest" # Replace "latest" with a release version to lock into a specific release
+  name                          = format("%s-%s", local.basename, "workload-protection")
+  region                        = var.region
+  resource_group_id             = ibm_resource_group.group.id
+  resource_tags                 = var.tags
+  cloud_monitoring_instance_crn = module.cloud_monitoring.crn
+  scc_wp_service_plan           = var.sysdig_plan
+  app_config_crn                = module.app_config.app_config_crn
+}
+
+# Create Trusted profile for SCC Workload Protection instance
+module "trusted_profile_scc_wp" {
+  source                      = "terraform-ibm-modules/trusted-profile/ibm"
+  version                     = "2.1.0"
+  trusted_profile_name        = "${var.prefix}-scc-wp-profile"
+  trusted_profile_description = "Trusted Profile for SCC-WP to access App Config and enterprise"
+
+  trusted_profile_identity = {
+    identifier    = module.scc_wp.crn
+    identity_type = "crn"
+    type          = "crn"
+  }
+
+  trusted_profile_policies = [
+    {
+      roles = ["Viewer", "Service Configuration Reader", "Manager"]
+      resources = [{
+        service = "apprapp"
+      }]
+      description = "App Config access"
+    }
+    # ,
+    # {
+    #   roles = ["Viewer", "Usage Report Viewer"]
+    #   resources = [{
+    #     service = "enterprise"
+    #   }]
+    #   description = "Enterprise access"
+    # }
+  ]
+
+  trusted_profile_links = [{
+    cr_type = "VSI"
+    links = [{
+      crn = module.scc_wp.crn
+    }]
+  }]
+}
+
+########################################################################################################################
+# SCC WP (Workload Protection) agents
+########################################################################################################################
+
+# Deploy SCC Workload Protection agent to the cluster
+module "scc_wp_agent" {
+  source = "terraform-ibm-modules/scc-workload-protection-agent/ibm"
+  # version = "latest" # Replace "latest" with a release version to lock into a specific release
+  access_key    = module.scc_wp.access_key
+  cluster_name  = ibm_container_vpc_cluster.roks_cluster.name
+  region        = var.region
+  endpoint_type = "private"
+  name          = format("%s-%s", local.basename, "wp-agent")
+}
+
+########################################################################################################################
+# App Configuration
+########################################################################################################################
+
+# Create App Config instance
+module "app_config" {
+  source = "terraform-ibm-modules/app-configuration/ibm"
+  # version           = "1.3.0"
+  region                                 = var.region
+  resource_group_id                      = ibm_resource_group.group.id
+  app_config_name                        = format("%s-%s", local.basename, "app-configuration")
+  app_config_tags                        = var.tags
+  enable_config_aggregator               = true # See https://cloud.ibm.com/docs/app-configuration?topic=app-configuration-ac-configuration-aggregator
+  app_config_plan                        = "basic"
+  config_aggregator_trusted_profile_name = format("%s-%s", local.basename, "config-aggregator-trusted-profile")
+}
+
+# VPE (Virtual Private Endpoint) for Monitoring
+##############################################################################
+# resource "ibm_is_virtual_endpoint_gateway" "vpe_monitoring" {
+#   for_each = { for target in local.endpoints : target.name => target if tobool(var.sysdig_use_vpe) }
+
+#   name           = "${local.basename}-monitoring-vpe"
+#   resource_group = ibm_resource_group.group.id
+#   vpc            = ibm_is_vpc.vpc.id
+
+#   target {
+#     crn           = module.cloud_monitoring.crn
+#     resource_type = "provider_cloud_service"
+#   }
+
+#   # one Reserved IP for per zone in the VPC
+#   dynamic "ips" {
+#     for_each = { for subnet in ibm_is_subnet.subnet : subnet.id => subnet }
+#     content {
+#       subnet = ips.key
+#       name   = "${ips.value.name}-ip-monitoring"
+#     }
+#   }
+#   tags = var.tags
+# }
 
 # Metrics Target
 # A route defines the rules that indicate what metrics are routed in a region 
