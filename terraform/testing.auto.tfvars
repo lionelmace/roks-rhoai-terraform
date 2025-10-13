@@ -20,7 +20,6 @@ openshift_version = "4.19_openshift"
 # openshift_os             = "REDHAT_8_64"
 openshift_os             = "RHCOS"
 openshift_machine_flavor = "bx2.8x32"
-# openshift_machine_flavor = "bx2.16x64" # ODF Flavors
 install_addons = true
 
 # Scale up   by adding a worker pool
@@ -36,11 +35,6 @@ roks_worker_pools = [
   # {
   #   pool_name        = "wpool-odf"
   #   machine_type     = "bx2.16x64"
-  #   workers_per_zone = 1
-  # },
-  # {
-  #   pool_name        = "default"
-  #   machine_type     = "mx2.4x32"
   #   workers_per_zone = 1
   # }
 ]
