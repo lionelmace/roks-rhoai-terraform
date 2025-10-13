@@ -60,12 +60,3 @@ openshift_update_all_workers = true
 ## Secrets Manager
 ##############################################################################
 existing_secrets_manager_name = "secrets-manager"
-
-
-##############################################################################
-## Observability: Monitoring (Sysdig)
-##############################################################################
-
-sysdig_plan                    = "graduated-tier"
-sysdig_enable_platform_metrics = true
-
