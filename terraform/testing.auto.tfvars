@@ -15,12 +15,11 @@ vpc_enable_public_gateway     = true
 ##############################################################################
 ## Cluster ROKS
 ##############################################################################
-# Optional: Specify OpenShift version. If not included, 4.17 is used
-openshift_version = "4.19_openshift"
-# openshift_os             = "REDHAT_8_64"
+# Oct 14, 2025: OpenShift AI only supports OpenShift version up to 4.17
+openshift_version        = "4.17_openshift"
 openshift_os             = "RHCOS"
 openshift_machine_flavor = "bx2.8x32"
-install_addons = true
+install_addons           = true
 
 # Scale up   by adding a worker pool
 # Scale down by setting the number of worker to Zero
