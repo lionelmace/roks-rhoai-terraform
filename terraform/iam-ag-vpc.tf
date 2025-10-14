@@ -11,7 +11,7 @@ resource "ibm_iam_access_group_policy" "application1_policy" {
   roles           = ["Viewer"]
   resources {
     resource_type = "resource-group"
-    resource      = ibm_resource_group.group.id
+    resource      = local.resource_group_id
   }
 }
 
@@ -68,7 +68,7 @@ resource "ibm_iam_access_group_policy" "policy_vpc" {
   resource_attributes {
     name     = "resourceGroupId"
     operator = "stringEquals"
-    value    = ibm_resource_group.group.id
+    value    = local.resource_group_id
   }
   resource_attributes {
     name     = "region"
@@ -97,7 +97,7 @@ resource "ibm_iam_access_group_policy" "policy_vsi" {
   resource_attributes {
     name     = "resourceGroupId"
     operator = "stringEquals"
-    value    = ibm_resource_group.group.id
+    value    = local.resource_group_id
   }
   resource_attributes {
     name     = "region"

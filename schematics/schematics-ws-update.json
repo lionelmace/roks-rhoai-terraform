@@ -1,0 +1,15 @@
+{
+    "type":[
+        "terraform_v1.9.2"
+    ],
+    "template_data": [
+    {
+        "type": "terraform_v1.9.2",
+        "env_values": [
+        {
+            "TF_LOG": "DEBUG"
+        }
+        ]
+    }
+    ]
+}
