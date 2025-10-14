@@ -3,7 +3,7 @@
 ##############################################################################
 
 variable "existing_resource_group_name" {
-  default     = "geo-mace"
+  default     = "default"
   description = "(Optional) Name of an existing resource group where to create resources"
 }
 

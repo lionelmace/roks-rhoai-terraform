@@ -5,6 +5,10 @@
 #region     = "eu-de"     # eu-de for Frankfurt MZR
 #icr_region = "de.icr.io"
 
+# Name of an existing RG (Resource Group) where to create resources.
+# Otherwise the default RG is used.
+existing_resource_group_name = ""
+
 ##############################################################################
 ## VPC
 ##############################################################################
