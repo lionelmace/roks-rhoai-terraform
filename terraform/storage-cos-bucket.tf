@@ -45,8 +45,8 @@ locals {
       name                  = "backup",
       cos_access_key_id     = nonsensitive(ibm_resource_key.cos-hmac-backup.credentials["cos_hmac_keys.access_key_id"])
       cos_secret_access_key = nonsensitive(ibm_resource_key.cos-hmac-backup.credentials["cos_hmac_keys.secret_access_key"])
-      cos_endpoint          = ibm_cos_bucket.backup-bucket.s3_endpoint_direct
-      cos_bucket_name       = ibm_cos_bucket.backup-bucket.bucket_name
+      cos_endpoint          = ibm_cos_bucket.bucket.s3_endpoint_direct
+      cos_bucket_name       = ibm_cos_bucket.bucket.bucket_name
     }
   ]
 }
