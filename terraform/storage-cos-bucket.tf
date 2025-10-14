@@ -43,6 +43,7 @@ locals {
   cos-credentials = [
     {
       cos_bucket_name       = ibm_cos_bucket.bucket.bucket_name
+      cos_bucket_id         = ibm_cos_bucket.bucket.id
       cos_access_key_id     = nonsensitive(ibm_resource_key.cos-hmac.credentials["cos_hmac_keys.access_key_id"])
       cos_secret_access_key = nonsensitive(ibm_resource_key.cos-hmac.credentials["cos_hmac_keys.secret_access_key"])
       cos_endpoint          = ibm_cos_bucket.bucket.s3_endpoint_direct
