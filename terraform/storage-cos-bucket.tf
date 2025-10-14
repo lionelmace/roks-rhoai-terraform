@@ -32,7 +32,7 @@ resource "ibm_cos_bucket" "bucket" {
 
 ## HMAC Service Credentials
 ##############################################################################
-resource "ibm_resource_key" "cos-hmac-backup" {
+resource "ibm_resource_key" "cos-hmac" {
   name                 = format("%s-%s", local.basename, "cos-instance-key")
   resource_instance_id = ibm_resource_instance.cos-instance.id
   role                 = "Writer"
@@ -40,17 +40,16 @@ resource "ibm_resource_key" "cos-hmac-backup" {
 }
 
 locals {
-  backup-endpoints = [
+  cos-credentials = [
     {
-      name                  = "backup",
-      cos_access_key_id     = nonsensitive(ibm_resource_key.cos-hmac-backup.credentials["cos_hmac_keys.access_key_id"])
-      cos_secret_access_key = nonsensitive(ibm_resource_key.cos-hmac-backup.credentials["cos_hmac_keys.secret_access_key"])
-      cos_endpoint          = ibm_cos_bucket.bucket.s3_endpoint_direct
       cos_bucket_name       = ibm_cos_bucket.bucket.bucket_name
+      cos_access_key_id     = nonsensitive(ibm_resource_key.cos-hmac.credentials["cos_hmac_keys.access_key_id"])
+      cos_secret_access_key = nonsensitive(ibm_resource_key.cos-hmac.credentials["cos_hmac_keys.secret_access_key"])
+      cos_endpoint          = ibm_cos_bucket.bucket.s3_endpoint_direct
     }
   ]
 }
 
 output "cos-instance-credentials" {
-  value = local.backup-endpoints
+  value = local.cos-credentials
 }
