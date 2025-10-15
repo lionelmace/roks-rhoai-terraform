@@ -42,7 +42,7 @@ roks_worker_pools = [
     zones            = ["eu-de-1","eu-de-2","eu-de-3"]
   },
   {
-    pool_name        = "gpu-A100"
+    pool_name        = "gpu-a100"
     machine_type     = "gx3d.48x240.2a100p"
     workers_per_zone = 1
     zones            = ["eu-de-1"] # <- only one zone

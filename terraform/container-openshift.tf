@@ -111,6 +111,7 @@ variable "roks_worker_pools" {
     pool_name        = string
     machine_type     = string
     workers_per_zone = number
+    zones            = optional(list(string))
   }))
 
   default = [
@@ -118,11 +119,13 @@ variable "roks_worker_pools" {
     #   pool_name        = "odf"
     #   machine_type     = "bx2.16x64"
     #   workers_per_zone = 1
+    #   zones            = ["eu-de-1","eu-de-2","eu-de-3"]
     # },
     # {
     #   pool_name        = "dev"
     #   machine_type     = "bx2.4x16"
     #   workers_per_zone = 1
+    #   zones            = ["eu-de-1"]
     # }
   ]
 
