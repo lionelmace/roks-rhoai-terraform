@@ -198,7 +198,11 @@ resource "ibm_container_vpc_worker_pool" "roks_worker_pools" {
   operating_system  = var.openshift_os
 
   dynamic "zones" {
-    for_each = { for subnet in ibm_is_subnet.subnet : subnet.id => subnet }
+    for_each = {
+      for id, s in ibm_is_subnet.subnet :
+      id => s
+      if (length(lookup(each.value, "zones", [])) == 0 || contains(each.value.zones, s.zone))
+    }
     content {
       name      = zones.value.zone
       subnet_id = zones.value.id
