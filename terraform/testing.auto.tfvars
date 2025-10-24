@@ -7,7 +7,7 @@
 
 # Name of an existing RG (Resource Group) where to create resources.
 # Otherwise the default RG is used.
-existing_resource_group_name = "shared-emea-rg"
+# existing_resource_group_name = "shared-emea-rg"
 
 ##############################################################################
 ## VPC
