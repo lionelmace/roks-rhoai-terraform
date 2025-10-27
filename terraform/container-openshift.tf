@@ -120,7 +120,7 @@ module "ocp_base" {
   # Enable if using worker autoscaling. Stops Terraform managing worker count.
   ignore_worker_pool_size_changes = true
   addons = {
-    "openshift-ai" = { version = "417.0.0" }
+    "openshift-ai" = { version = "417" }
     "openshift-data-foundation" = { version = "4.18.0" }
   }
   kms_config = {
