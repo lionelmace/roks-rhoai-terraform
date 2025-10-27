@@ -50,11 +50,9 @@ module "upgrade_plan" {
 
 module "set_quota" {
   source = "terraform-ibm-modules/container-registry/ibm//modules/quotas"
-  update_storage_quota = true
   # storage_megabytes = 5 * 1024 - 1
   # The value -1 denotes Unlimited
   storage_megabytes = -1
-  update_traffic_quota = true
   # traffic_megabytes = 499
   traffic_megabytes = -1
 }

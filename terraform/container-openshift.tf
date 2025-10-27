@@ -30,6 +30,23 @@ locals {
     zone-3 = local.subnets
   }
 
+  # LMA BEGIN ------------------
+  # Subnets for one zone for GPU
+  subnets_gpu_zone_1 = [
+    for s in ibm_is_subnet.subnets : {
+      id         = s.id
+      zone       = s.zone
+      cidr_block = s.ipv4_cidr_block
+    } if s.zone == "${var.region}-1"
+  ]
+
+  # GPU subnets
+  cluster_vpc_subnets_merged = merge(
+    local.cluster_vpc_subnets,
+    { "zone-1-gpu" = local.subnets_gpu_zone_1 }
+  )
+  # LMA END ------------------
+
   boot_volume_encryption_kms_config = {
     crk             = module.kp_all_inclusive.keys["${local.key_ring}.${local.boot_volume_key}"].key_id
     kms_instance_id = module.kp_all_inclusive.kms_guid
@@ -47,15 +64,15 @@ locals {
       maxSize                           = 6
       boot_volume_encryption_kms_config = local.boot_volume_encryption_kms_config
     },
-    # {
-    #   subnet_prefix                     = "zone-2"
-    #   pool_name                         = "gpu-pool"
-    #   machine_type                      = "gx3.16x80.l4"
-    #   workers_per_zone                  = 1
-    #   secondary_storage                 = "600gb.10iops-tier"
-    #   operating_system                  = "RHCOS"
-    #   boot_volume_encryption_kms_config = local.boot_volume_encryption_kms_config
-    # },
+    {
+      subnet_prefix                     = "zone-1-gpu"
+      pool_name                         = "gpu-pool"
+      machine_type                      = "gx3.16x80.l4"
+      workers_per_zone                  = 1
+      secondary_storage                 = "600gb.10iops-tier"
+      operating_system                  = "RHCOS"
+      boot_volume_encryption_kms_config = local.boot_volume_encryption_kms_config
+    },
     # {
     #   subnet_prefix                     = "zone-3"
     #   pool_name                         = "zone-3"
@@ -90,7 +107,8 @@ module "ocp_base" {
   region                              = var.region
   force_delete_storage                = true
   vpc_id                              = ibm_is_vpc.vpc.id
-  vpc_subnets                         = local.cluster_vpc_subnets
+  #LMA vpc_subnets                         = local.cluster_vpc_subnets
+  vpc_subnets                         = local.cluster_vpc_subnets_merged
   worker_pools                        = local.worker_pools
   ocp_version                         = var.ocp_version
   tags                                = var.resource_tags
@@ -102,7 +120,7 @@ module "ocp_base" {
   # Enable if using worker autoscaling. Stops Terraform managing worker count.
   ignore_worker_pool_size_changes = true
   addons = {
-    # "openshift-ai" = { version = "417.0.0" }
+    "openshift-ai" = { version = "417.0.0" }
     "openshift-data-foundation" = { version = "4.18.0" }
   }
   kms_config = {
