@@ -93,7 +93,8 @@ locals {
     {
       subnet_prefix     = "gpu"
       pool_name         = "gpu"
-      machine_type      = "gx3.16x80.l4"
+      # machine_type      = "gx3.16x80.l4"
+      machine_type      = "gx3d.24x120.a100p"
       secondary_storage = "600gb.10iops-tier"
       workers_per_zone  = 1
       operating_system  = "RHCOS"
