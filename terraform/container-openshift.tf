@@ -1,16 +1,43 @@
 ########################################################################################################################
 # Variables
 ########################################################################################################################
+
+variable "ocp_version" {
+  type        = string
+  description = "Version of the OCP cluster to provision"
+  default     = null
+}
+
+variable "ocp_entitlement" {
+  type        = string
+  description = "Value that is applied to the entitlements for OCP cluster provisioning"
+  default     = null
+}
+
+variable "enable_openshift_version_upgrade" {
+  type        = bool
+  description = "When set to true, allows Terraform to manage major OpenShift version upgrades. This is intended for advanced users who manually control major version upgrades. Defaults to false to avoid unintended drift from IBM-managed patch updates. NOTE: Enabling this on existing clusters requires a one-time terraform state migration. See [README](https://github.com/terraform-ibm-modules/terraform-ibm-base-ocp-vpc/blob/main/README.md#openshift-version-upgrade) for details."
+  default     = false
+}
+
+variable "default_worker_pool_machine_type" {
+  type        = string
+  description = "The machine type for the default worker pool"
+  default     = "bx2.4x16"
+}
+
+variable "gpu_worker_pool_machine_type" {
+  type        = string
+  description = "The machine type for the GPU worker pool"
+  default     = "gx3.16x80.l4"
+}
+
 variable "disable_outbound_traffic_protection" {
   type        = bool
   description = "When set to true, enabled outbound traffic."
   default     = false
 }
 
-
-########################################################################################################################
-# Kube Audit
-########################################################################################################################
 ########################################################################################################################
 # OCP VPC cluster with default worker pool across 3 zones and a GPU worker pool in zone 1
 ########################################################################################################################
@@ -87,4 +114,13 @@ module "ocp_base" {
     "openshift-ai"              = { version = "417" }
     "openshift-data-foundation" = { version = "4.18.0" }
   }
+}
+
+########################################################################################################################
+# Outputs
+########################################################################################################################
+
+output "cluster_name" {
+  value       = module.ocp_base.cluster_name
+  description = "The name of the provisioned cluster."
 }
