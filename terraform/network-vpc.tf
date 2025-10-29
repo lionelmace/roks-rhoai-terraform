@@ -1,38 +1,65 @@
-
 ########################################################################################################################
-# VPC
-########################################################################################################################
-
-resource "ibm_is_vpc" "vpc" {
-  name                      = "${var.prefix}-vpc"
-  resource_group            = module.resource_group.resource_group_id
-  address_prefix_management = "auto"
-  tags                      = var.resource_tags
-}
-
-########################################################################################################################
-# Public Gateway in zone 1 only
+# VPC + Subnets + Public Gateways using landing-zone-vpc module
 ########################################################################################################################
 
-resource "ibm_is_public_gateway" "gateway" {
-  for_each       = toset(["1", "2", "3"])
-  name           = "${var.prefix}-gateway-${each.key}"
-  vpc            = ibm_is_vpc.vpc.id
-  resource_group = module.resource_group.resource_group_id
-  zone           = "${var.region}-${each.key}"
-}
+module "vpc" {
+  source = "terraform-ibm-modules/landing-zone-vpc/ibm"
+  # version           = "8.8.0"
+  resource_group_id = module.resource_group.resource_group_id
+  region            = var.region
+  prefix            = var.prefix
+  tags              = var.resource_tags
+  name              = "${var.prefix}-vpc"
 
-########################################################################################################################
-# Subnets across 3 zones
-# Public gateway attached to all the zones
-########################################################################################################################
+  # Define subnets across 3 zones for the default worker pool
+  # and a separate subnet in zone 1 for the GPU worker pool
+  subnets = {
+    zone-1 = [
+      {
+        name           = "subnet-default-1"
+        cidr           = "10.10.10.0/24"
+        public_gateway = true
+        acl_name       = "vpc-acl"
+      },
+      {
+        name           = "subnet-gpu"
+        cidr           = "10.10.20.0/24"
+        public_gateway = true
+        acl_name       = "vpc-acl"
+      }
+    ],
+    zone-2 = [
+      {
+        name           = "subnet-default-2"
+        cidr           = "10.20.10.0/24"
+        public_gateway = true
+        acl_name       = "vpc-acl"
+      }
+    ],
+    zone-3 = [
+      {
+        name           = "subnet-default-3"
+        cidr           = "10.30.10.0/24"
+        public_gateway = true
+        acl_name       = "vpc-acl"
+      }
+    ]
+  }
 
-resource "ibm_is_subnet" "subnets" {
-  for_each                 = toset(["1", "2", "3"])
-  name                     = "${var.prefix}-subnet-${each.key}"
-  vpc                      = ibm_is_vpc.vpc.id
-  resource_group           = module.resource_group.resource_group_id
-  zone                     = "${var.region}-${each.key}"
-  total_ipv4_address_count = 256
-  public_gateway           = ibm_is_public_gateway.gateway[each.key].id
+  # Enable public gateways in all zones
+  use_public_gateways = {
+    zone-1 = true
+    zone-2 = true
+    zone-3 = true
+  }
+
+  # Define network ACLs
+  network_acls = [
+    {
+      name                         = "vpc-acl"
+      add_ibm_cloud_internal_rules = true
+      add_vpc_connectivity_rules   = true
+      rules                        = []
+    }
+  ]
 }
