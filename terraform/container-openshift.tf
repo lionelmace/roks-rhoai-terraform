@@ -75,6 +75,11 @@ locals {
   # Combine all subnets
   cluster_vpc_subnets = merge(local.default_vpc_subnets, local.gpu_vpc_subnets)
 
+  boot_volume_encryption_kms_config = {
+    crk             = module.kp_all_inclusive.keys["${local.key_ring}.${local.boot_volume_key}"].key_id
+    kms_instance_id = module.kp_all_inclusive.kms_guid
+  }
+
   # Define worker pools
   worker_pools = [
     {
@@ -116,6 +121,13 @@ module "ocp_base" {
   }
 }
 
+
+data "ibm_container_cluster_config" "cluster_config" {
+  cluster_name_id   = module.ocp_base.cluster_id
+  resource_group_id = module.ocp_base.resource_group_id
+  #LMA config_dir        = "${path.module}/../../kubeconfig"
+}
+
 ########################################################################################################################
 # Outputs
 ########################################################################################################################
@@ -123,4 +135,19 @@ module "ocp_base" {
 output "cluster_name" {
   value       = module.ocp_base.cluster_name
   description = "The name of the provisioned cluster."
+}
+
+
+########################################################################################################################
+# Kube Audit
+########################################################################################################################
+
+module "kube_audit" {
+  depends_on                = [module.ocp_base] # Wait for the cluster to completely deploy.
+  source                    = "terraform-ibm-modules/base-ocp-vpc/ibm//modules/kube-audit"
+  cluster_id                = module.ocp_base.cluster_id
+  cluster_resource_group_id = module.resource_group.resource_group_id
+  audit_log_policy          = "WriteRequestBodies"
+  region                    = var.region
+  ibmcloud_api_key          = var.ibmcloud_api_key
 }

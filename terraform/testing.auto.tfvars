@@ -11,10 +11,5 @@ resource_group = "geo-mace"
 ##############################################################################
 ocp_version                         = "4.18"
 disable_outbound_traffic_protection = true
-efault_worker_pool_machine_type    = "bx2.16x64"
+default_worker_pool_machine_type    = "bx2.16x64"
 gpu_worker_pool_machine_type       = "gx3.16x80.l4"
-
-##############################################################################
-## Module Registry
-##############################################################################
-namespace_region = "eu-de"
