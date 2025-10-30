@@ -43,7 +43,7 @@ module "trusted_profile" {
 }
 
 module "logs_agents" {
-  depends_on                    = [module.kube_audit]
+  # depends_on                    = [module.kube_audit]
   source                        = "terraform-ibm-modules/logs-agent/ibm"
   version                       = "1.9.2"
   cluster_id                    = module.ocp_base.cluster_id
