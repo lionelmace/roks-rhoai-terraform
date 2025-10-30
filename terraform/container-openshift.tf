@@ -116,6 +116,8 @@ module "ocp_base" {
   access_tags                         = var.access_tags
   ocp_entitlement                     = var.ocp_entitlement
   disable_outbound_traffic_protection = var.disable_outbound_traffic_protection
+  # Set to folse as local-exec is not supported by default on Terraform Cloud
+  verify_worker_network_readiness     = false
   addons = {
     # "openshift-ai"              = { version = "417" }
     "openshift-data-foundation" = { version = "4.18.0" }
