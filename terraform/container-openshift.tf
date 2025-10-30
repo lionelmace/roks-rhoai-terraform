@@ -117,8 +117,9 @@ module "ocp_base" {
   ocp_entitlement                     = var.ocp_entitlement
   disable_outbound_traffic_protection = var.disable_outbound_traffic_protection
   addons = {
-    "openshift-ai"              = { version = "417" }
+    # "openshift-ai"              = { version = "417" }
     "openshift-data-foundation" = { version = "4.18.0" }
+    # "openshift-data-foundation" = { version = "4.19.1" }
   }
 }
 
